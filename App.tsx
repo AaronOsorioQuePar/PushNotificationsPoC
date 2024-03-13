@@ -5,8 +5,8 @@
  * @format
  */
 
-import React, {useEffect} from 'react';
-import type {PropsWithChildren} from 'react';
+import React, { useEffect } from 'react';
+import type { PropsWithChildren } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -33,8 +33,9 @@ type SectionProps = PropsWithChildren<{
   title: string;
 }>;
 
-function Section({children, title}: SectionProps): React.JSX.Element {
+function Section({ children, title }: SectionProps): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+
   return (
     <View style={styles.sectionContainer}>
       <Text
@@ -61,11 +62,14 @@ function Section({children, title}: SectionProps): React.JSX.Element {
 
 function App(): React.JSX.Element {
   useEffect(() => {
-    requestUserPermission();
+    requestUserPermission().then(fbToken => {
+      setFbToken(JSON.stringify(fbToken, null, 2) || 'no token');
+    });
     NotificationListener();
   }, []);
 
   const isDarkMode = useColorScheme() === 'dark';
+  const [fbToken, setFbToken] = React.useState<string>('');
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -86,8 +90,7 @@ function App(): React.JSX.Element {
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
           <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
+            FireBase Token: <Text style={styles.highlight}>{fbToken}</Text>
           </Section>
           <Section title="See Your Changes">
             <ReloadInstructions />

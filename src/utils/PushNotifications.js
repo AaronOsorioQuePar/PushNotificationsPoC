@@ -5,23 +5,28 @@ export const requestUserPermission = async () => {
   const enabled =
     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  let token = '';
   if (enabled) {
     console.log(authStatus); // you can remove the console.log later
-    GetFCMToken();
+    token = await GetFCMToken();
   }
+  return {token, enabled};
 };
 const GetFCMToken = async () => {
-  let fcmtoken = AsyncStorage.getItem('fcmtoken');
+  let fcmtoken = await AsyncStorage.getItem('fcmtoken');
   if (!fcmtoken) {
     try {
-      let fcmtoken = await messaging().getToken();
+      fcmtoken = await messaging().getToken();
+      console.log(fcmtoken);
       if (fcmtoken) {
         await AsyncStorage.setItem('fcmtoken', fcmtoken);
       }
     } catch (error) {
-      console.log(error);
+      console.log('Error', error);
+      fcmtoken = error.toString();
     }
   }
+  return fcmtoken;
 };
 export const NotificationListener = () => {
   messaging().onNotificationOpenedApp(remoteMessage => {
